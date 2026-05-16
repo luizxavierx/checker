@@ -4,6 +4,7 @@ import { getBotDetail } from "@/lib/data";
 import { MetricCard } from "@/components/MetricCard";
 import { RankTable } from "@/components/RankTable";
 import { RecordsTable } from "@/components/RecordsTable";
+import { ApiError } from "@/components/ApiError";
 import Link from "next/link";
 
 export default async function BotDetailPage({
@@ -12,7 +13,12 @@ export default async function BotDetailPage({
   params: Promise<{ botKey: string }>;
 }) {
   const { botKey } = await params;
-  const data = await getBotDetail(botKey);
+  let data: Awaited<ReturnType<typeof getBotDetail>>;
+  try {
+    data = await getBotDetail(botKey);
+  } catch (e) {
+    return <ApiError message={String(e)} />;
+  }
 
   if (!data.ok || !data.bot) {
     return (

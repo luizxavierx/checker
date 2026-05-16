@@ -2,6 +2,7 @@ export const dynamic = "force-dynamic";
 
 import { getRecord } from "@/lib/data";
 import { RecordDetail } from "@/components/RecordDetail";
+import { ApiError } from "@/components/ApiError";
 import Link from "next/link";
 
 export default async function RecordPage({
@@ -10,7 +11,12 @@ export default async function RecordPage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
-  const data = await getRecord(id);
+  let data: Awaited<ReturnType<typeof getRecord>>;
+  try {
+    data = await getRecord(id);
+  } catch (e) {
+    return <ApiError message={String(e)} />;
+  }
 
   if (!data.ok || !data.record) {
     return (

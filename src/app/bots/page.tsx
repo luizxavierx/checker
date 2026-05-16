@@ -2,9 +2,15 @@ export const dynamic = "force-dynamic";
 
 import { getBots } from "@/lib/data";
 import { BotCard } from "@/components/BotCard";
+import { ApiError } from "@/components/ApiError";
 
 export default async function BotsPage() {
-  const data = await getBots();
+  let data: Awaited<ReturnType<typeof getBots>>;
+  try {
+    data = await getBots();
+  } catch (e) {
+    return <ApiError message={String(e)} />;
+  }
   const bots = data.bots ?? [];
 
   return (

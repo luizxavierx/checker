@@ -2,9 +2,15 @@ export const dynamic = "force-dynamic";
 
 import { getExtensionStatus } from "@/lib/data";
 import { ExtensionStatusWidget } from "@/components/ExtensionStatusWidget";
+import { ApiError } from "@/components/ApiError";
 
 export default async function ExtensionPage() {
-  const data = await getExtensionStatus();
+  let data: Awaited<ReturnType<typeof getExtensionStatus>>;
+  try {
+    data = await getExtensionStatus();
+  } catch (e) {
+    return <ApiError message={String(e)} />;
+  }
 
   if (!data.ok || !data.extension) {
     return (

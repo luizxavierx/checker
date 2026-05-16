@@ -4,6 +4,7 @@ import { getSummary } from "@/lib/data";
 import { MetricCard } from "@/components/MetricCard";
 import { RankTable } from "@/components/RankTable";
 import { RecordsTable } from "@/components/RecordsTable";
+import { ApiError } from "@/components/ApiError";
 
 function SectionTitle({ children }: { children: React.ReactNode }) {
   return (
@@ -24,8 +25,13 @@ function SectionTitle({ children }: { children: React.ReactNode }) {
 }
 
 export default async function DashboardPage() {
-  const data = await getSummary();
-  const s    = data.stats;
+  let data: Awaited<ReturnType<typeof getSummary>>;
+  try {
+    data = await getSummary();
+  } catch (e) {
+    return <ApiError message={String(e)} />;
+  }
+  const s = data.stats;
   const fmtDate = (v: string | null) =>
     v ? new Date(v).toLocaleString("pt-BR") : "—";
 
